@@ -25,7 +25,6 @@ def terminate():
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -42,7 +41,6 @@ def load_image(name, colorkey=None):
 
 def start_screen():
     intro_text = ["", "", "", "", "", "Чтобы продолжить нажмите на любую кнопку"]
-
     fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 40)
@@ -55,7 +53,6 @@ def start_screen():
         intro_rect.x = 350
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -68,14 +65,9 @@ def start_screen():
 
 def load_level(filename):
     filename = "data/" + filename
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
-
-    # и подсчитываем максимальную длину
     max_width = max(map(len, level_map))
-
-    # дополняем каждую строку пустыми клетками ('.')
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
 
 
@@ -130,7 +122,6 @@ class Player(pygame.sprite.Sprite):
         self.speedy = 0
         self.rect.x = tile_width * pos_x
         self.rect.y = tile_height * pos_y
-        self.walls = None
         self.coins = None
         self.count_coins = 0
 
@@ -169,7 +160,6 @@ def generate_level(level):
                 Wall('gr', x, y)
             elif level[y][x] == '|':
                 Wall('wwr', x, y)
-    # вернем игрока, а также размер поля в клетках
     return new_player, x, y
 
 
