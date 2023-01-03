@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 
-FPS = 30
+FPS = 50
 clock = pygame.time.Clock()
 
 size = WIDTH, HEIGHT = 1400, 800
@@ -83,7 +83,7 @@ tile_images = {
     'fon': load_image('fon_map.jpg'),
     'empty': load_image('block.jpg')
 }
-player_image = load_image('player.png', -1)
+player_image = load_image('nplayer.png', -1)
 
 tile_width = tile_height = 50
 
@@ -174,16 +174,16 @@ if __name__ == '__main__':
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    player.speedx = 5
+                    player.speedx = 2
                     player.speedy = 0
                 if event.key == pygame.K_LEFT:
-                    player.speedx = -5
+                    player.speedx = -2
                     player.speedy = 0
                 if event.key == pygame.K_UP:
-                    player.speedy = -5
+                    player.speedy = -2
                     player.speedx = 0
                 if event.key == pygame.K_DOWN:
-                    player.speedy = 5
+                    player.speedy = 2
                     player.speedx = 0
         screen.fill(pygame.Color('black'))
         all_sprites.draw(screen)
