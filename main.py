@@ -10,6 +10,7 @@ size = WIDTH, HEIGHT = 1400, 800
 pygame.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Labyrinth of freedom')
+pygame.display.set_icon(pygame.image.load('data/ico.jpg'))
 
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
@@ -83,7 +84,7 @@ tile_images = {
     'fon': load_image('fon_map.jpg'),
     'empty': load_image('block.jpg')
 }
-player_image = load_image('pl.jpg', -1)
+player_image = load_image('npl.png', -1)
 
 tile_width = tile_height = 50
 
