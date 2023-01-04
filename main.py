@@ -15,7 +15,7 @@ all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 walls_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
-finish = pygame.sprite.Group()
+finish_group = pygame.sprite.Group()
 
 
 def terminate():
@@ -83,7 +83,7 @@ tile_images = {
     'fon': load_image('fon_map.jpg'),
     'empty': load_image('block.jpg')
 }
-player_image = load_image('nplayer.png', -1)
+player_image = load_image('pl.jpg', -1)
 
 tile_width = tile_height = 50
 
@@ -102,11 +102,13 @@ class Wall(pygame.sprite.Sprite):
         self.image = tile_images[tile_type]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
+        self.x = pos_x
+        self.y = pos_y
 
 
 class Finish(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__(finish, all_sprites)
+        super().__init__(finish_group, all_sprites)
         self.image = tile_images[tile_type]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
@@ -129,6 +131,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         if pygame.sprite.spritecollideany(self, walls_group):
+            self.speedx = 0
+            self.speedy = 0
+        collisions = pygame.sprite.groupcollide(player_group, tiles_group, False, True)
+        if pygame.sprite.spritecollideany(self, finish_group):
             self.speedx = 0
             self.speedy = 0
 
