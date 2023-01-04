@@ -138,16 +138,16 @@ class Player(pygame.sprite.Sprite):
             self.move = True
             if self.speedx > 0:
                 self.speedx = 0
-                self.rect.x = self.rect.x - 5
+                self.rect.x = self.rect.x - 10
             if self.speedx < 0:
                 self.speedx = 0
-                self.rect.x = self.rect.x + 5
+                self.rect.x = self.rect.x + 10
             if self.speedy > 0:
                 self.speedy = 0
-                self.rect.y = self.rect.y - 5
+                self.rect.y = self.rect.y - 10
             if self.speedy < 0:
                 self.speedy = 0
-                self.rect.y = self.rect.y + 5
+                self.rect.y = self.rect.y + 10
         collisions = pygame.sprite.groupcollide(player_group, tiles_group, False, True)
         if pygame.sprite.spritecollideany(self, finish_group) and self.fin:
             self.speedx = 0
@@ -202,25 +202,25 @@ if __name__ == '__main__':
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT and player.move:
-                    player.speedx = 5
+                    player.speedx = 10
                     player.speedy = 0
                     player.move = False
                 if event.key == pygame.K_LEFT and player.move:
-                    player.speedx = -5
+                    player.speedx = -10
                     player.speedy = 0
                     player.move = False
                 if event.key == pygame.K_UP and player.move:
-                    player.speedy = -5
+                    player.speedy = -10
                     player.speedx = 0
                     player.move = False
                 if event.key == pygame.K_DOWN and player.move:
-                    player.speedy = 5
+                    player.speedy = 10
                     player.speedx = 0
                     player.move = False
         screen.fill(pygame.Color('black'))
         all_sprites.draw(screen)
         all_sprites.update()
-        clock.tick(60)
+        clock.tick(FPS)
         pygame.display.update()
         pygame.display.flip()
     pygame.quit()
