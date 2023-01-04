@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 
-FPS = 50
+FPS = 60
 clock = pygame.time.Clock()
 
 size = WIDTH, HEIGHT = 1400, 800
@@ -127,17 +127,38 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = tile_height * pos_y
         self.coins = None
         self.count_coins = 0
+        self.f = False
+        self.fin = True
+        self.move = True
 
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         if pygame.sprite.spritecollideany(self, walls_group):
-            self.speedx = 0
-            self.speedy = 0
+            self.move = True
+            if self.speedx > 0:
+                self.speedx = 0
+                self.rect.x = self.rect.x - 5
+            if self.speedx < 0:
+                self.speedx = 0
+                self.rect.x = self.rect.x + 5
+            if self.speedy > 0:
+                self.speedy = 0
+                self.rect.y = self.rect.y - 5
+            if self.speedy < 0:
+                self.speedy = 0
+                self.rect.y = self.rect.y + 5
         collisions = pygame.sprite.groupcollide(player_group, tiles_group, False, True)
-        if pygame.sprite.spritecollideany(self, finish_group):
+        if pygame.sprite.spritecollideany(self, finish_group) and self.fin:
             self.speedx = 0
             self.speedy = 0
+            self.f = True
+            self.fin = False
+        if self.f:
+            self.rect.x = self.rect.x - 40
+            self.f = False
+
+
 
 
 def generate_level(level):
@@ -180,18 +201,22 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    player.speedx = 2
+                if event.key == pygame.K_RIGHT and player.move:
+                    player.speedx = 5
                     player.speedy = 0
-                if event.key == pygame.K_LEFT:
-                    player.speedx = -2
+                    player.move = False
+                if event.key == pygame.K_LEFT and player.move:
+                    player.speedx = -5
                     player.speedy = 0
-                if event.key == pygame.K_UP:
-                    player.speedy = -2
+                    player.move = False
+                if event.key == pygame.K_UP and player.move:
+                    player.speedy = -5
                     player.speedx = 0
-                if event.key == pygame.K_DOWN:
-                    player.speedy = 2
+                    player.move = False
+                if event.key == pygame.K_DOWN and player.move:
+                    player.speedy = 5
                     player.speedx = 0
+                    player.move = False
         screen.fill(pygame.Color('black'))
         all_sprites.draw(screen)
         all_sprites.update()
