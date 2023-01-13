@@ -8,6 +8,9 @@ FPS = 60
 clock = pygame.time.Clock()
 
 size = WIDTH, HEIGHT = 1200, 800
+levels = 0
+score = 0
+level_up = False
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -75,7 +78,8 @@ tile_images = {
     'empty': load_image('block.jpg'),
     'coin': load_image('coin.png', -1)
 }
-
+maps = ['lv2.txt']
+anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
 player_image = load_image('pl1.jpg', -1)
 
 
@@ -142,6 +146,7 @@ class Player(pygame.sprite.Sprite):
         self.count_coins = 0
         self.f = False
         self.move = True
+        self.animtm = 0
 
     def update(self):
         score = str(self.count_coins)
@@ -175,11 +180,16 @@ class Player(pygame.sprite.Sprite):
         if collis_check:
             for check in collis_check.values():
                 self.count_coins += 10 * len(check)
-        if pygame.sprite.spritecollideany(self, finish_group):
-            self.f = True
-
-    def open_menu(self):
-        menu_screen()
+        if self.f:
+            if self.animtm < 21:
+                screen.blit(anim[self.animtm // 10], (self.rect.x - 20, self.rect.y - 20))
+                self.animtm += 1
+            else:
+                global levels, scores
+                levels += 1
+                scores = self.count_coins
+                self.kill()
+                menu_screen()
 
 
 def generate_level(level):
@@ -194,7 +204,7 @@ def generate_level(level):
             elif level[y][x] == '0':
                 Tile('fon', x, y)
             elif level[y][x] == 'f':
-                Finish('finish', x, y)
+                fin = Finish('finish', x, y)
             elif level[y][x] == '2':
                 Wall('up_l', x, y)
             elif level[y][x] == '1':
@@ -209,18 +219,33 @@ def generate_level(level):
                 Wall('wwr', x, y)
             elif level[y][x] == 'a':
                 Coins('coin', x, y)
-    return new_player
+    return new_player, fin
 
 
 def menu_screen():
-    intro_text = "Чтобы продолжить нажмите на любую кнопку"
+    global scores, level_up
     fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
+    intro_text = "Чтобы продолжить нажмите на любую кнопку"
     font = pygame.font.Font(None, 40)
     text_surface = font.render(intro_text, True, pygame.Color('yellow'))
     intro_rect = text_surface.get_rect()
     intro_rect.midtop = (600, 730)
     screen.blit(text_surface, intro_rect)
+
+    sc = 'Счет:' + str(scores)
+    sc_font = pygame.font.Font(None, 70)
+    sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
+    sc_rect = sc_text.get_rect()
+    sc_rect.midtop = (300, 300)
+    screen.blit(sc_text, sc_rect)
+
+    lv_up = 'Уровень пройден!'
+    lv_up_text = sc_font.render(lv_up, True, pygame.Color('yellow'))
+    lv_up_rect = lv_up_text.get_rect()
+    lv_up_rect.midtop = (250, 200)
+    screen.blit(lv_up_text, lv_up_rect)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -228,6 +253,7 @@ def menu_screen():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                level_up = True
                 return
         pygame.display.flip()
         clock.tick(FPS)
