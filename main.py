@@ -24,18 +24,34 @@ if __name__ == '__main__':
                     player.speedx = 40
                     player.speedy = 0
                     player.move = False
+                    player.rt = True
+                    player.lf = False
+                    player.dw = False
+                    player.up = False
                 if event.key == pygame.K_LEFT and player.move:
                     player.speedx = -40
                     player.speedy = 0
                     player.move = False
+                    player.rt = False
+                    player.lf = True
+                    player.dw = False
+                    player.up = False
                 if event.key == pygame.K_UP and player.move:
                     player.speedy = -40
                     player.speedx = 0
                     player.move = False
+                    player.rt = False
+                    player.lf = False
+                    player.dw = False
+                    player.up = True
                 if event.key == pygame.K_DOWN and player.move:
                     player.speedy = 40
                     player.speedx = 0
                     player.move = False
+                    player.rt = False
+                    player.lf = False
+                    player.dw = True
+                    player.up = False
         if player.rect.x == fn.rect.x and player.rect.y == fn.rect.y:
             player.f = True
         screen.fill(pygame.Color('black'))

@@ -80,7 +80,10 @@ tile_images = {
 }
 maps = ['lv2.txt']
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
-player_image = load_image('pl1.jpg', -1)
+plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1)]
+plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1)]
+plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1)]
+plim_up = [load_image('up1.png', -1), load_image('up2.png', -1)]
 
 
 def load_level(filename):
@@ -136,7 +139,7 @@ class Finish(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
-        self.image = player_image
+        self.image = plim_up[0]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.speedx = 0
@@ -147,8 +150,25 @@ class Player(pygame.sprite.Sprite):
         self.f = False
         self.move = True
         self.animtm = 0
+        self.skintm = 0
+        self.rt = False
+        self.lf = False
+        self.dw = False
+        self.up = False
 
     def update(self):
+        if self.skintm + 1 >= 60:
+            self.skintm = 0
+        if self.rt:
+            self.image = plim_rt[self.skintm // 30]
+        if self.lf:
+            self.image = plim_lf[self.skintm // 30]
+        if self.up:
+            self.image = plim_up[self.skintm // 30]
+        if self.dw:
+            self.image = plim_dw[self.skintm // 30]
+        self.skintm += 1
+
         score = str(self.count_coins)
         font = pygame.font.Font(None, 30)
         text_surface = font.render(score, True, pygame.Color('yellow'))
@@ -237,13 +257,13 @@ def menu_screen():
     sc_font = pygame.font.Font(None, 70)
     sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
     sc_rect = sc_text.get_rect()
-    sc_rect.midtop = (300, 300)
+    sc_rect.midtop = (350, 300)
     screen.blit(sc_text, sc_rect)
 
     lv_up = 'Уровень пройден!'
     lv_up_text = sc_font.render(lv_up, True, pygame.Color('yellow'))
     lv_up_rect = lv_up_text.get_rect()
-    lv_up_rect.midtop = (250, 200)
+    lv_up_rect.midtop = (350, 200)
     screen.blit(lv_up_text, lv_up_rect)
 
     while True:
