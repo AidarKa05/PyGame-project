@@ -1,8 +1,7 @@
-import time
-
 import pygame
 import sys
 from methods_lib import start_screen, load_level, generate_level, all_sprites, screen, level_up, clear, maps, levels
+from methods_lib import lose_screen, choose_pers
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -10,6 +9,7 @@ clock = pygame.time.Clock()
 if __name__ == '__main__':
     player = None
     start_screen()
+    choose_pers()
     running = True
     while running:
         if level_up:
@@ -22,6 +22,10 @@ if __name__ == '__main__':
         if player.up_lv:
             clear()
             level_up = True
+        if player.on_trap:
+            lose_screen()
+            clear()
+            player, fn = generate_level(load_level(maps[levels]))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
