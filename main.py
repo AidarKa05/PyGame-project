@@ -2,20 +2,26 @@ import time
 
 import pygame
 import sys
-from methods_lib import start_screen, load_level, generate_level, all_sprites, screen, level_up, levels, maps
+from methods_lib import start_screen, load_level, generate_level, all_sprites, screen, level_up, clear, maps, levels
 
 FPS = 60
 clock = pygame.time.Clock()
 
-
 if __name__ == '__main__':
     player = None
     start_screen()
-    player, fn = generate_level(load_level('map.txt'))
-    if level_up:
-        player, fn = generate_level(load_level(maps[levels - 1]))
     running = True
     while running:
+        if level_up:
+            levels += 1
+            if levels > 1:
+                levels = 1
+            else:
+                player, fn = generate_level(load_level(maps[levels]))
+                level_up = False
+        if player.up_lv:
+            clear()
+            level_up = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

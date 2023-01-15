@@ -8,9 +8,11 @@ FPS = 60
 clock = pygame.time.Clock()
 
 size = WIDTH, HEIGHT = 1200, 800
-levels = 0
+levels = -1
 score = 0
-level_up = False
+level_up = True
+clear_sprites = False
+
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -78,8 +80,9 @@ tile_images = {
     'empty': load_image('block.jpg'),
     'coin': load_image('coin.png', -1)
 }
-maps = ['lv2.txt']
+maps = ['lv1.txt', 'lv2.txt']
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
+pl_stat = load_image('plst.png')
 plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1)]
 plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1)]
 plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1)]
@@ -139,7 +142,7 @@ class Finish(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
-        self.image = plim_up[0]
+        self.image = pl_stat
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.speedx = 0
@@ -155,6 +158,7 @@ class Player(pygame.sprite.Sprite):
         self.lf = False
         self.dw = False
         self.up = False
+        self.up_lv = False
 
     def update(self):
         if self.skintm + 1 >= 60:
@@ -205,9 +209,9 @@ class Player(pygame.sprite.Sprite):
                 screen.blit(anim[self.animtm // 10], (self.rect.x - 20, self.rect.y - 20))
                 self.animtm += 1
             else:
-                global levels, scores
-                levels += 1
+                global scores
                 scores = self.count_coins
+                self.up_lv = True
                 self.kill()
                 menu_screen()
 
@@ -243,7 +247,7 @@ def generate_level(level):
 
 
 def menu_screen():
-    global scores, level_up
+    global scores
     fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
@@ -273,7 +277,24 @@ def menu_screen():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                level_up = True
                 return
         pygame.display.flip()
         clock.tick(FPS)
+
+
+def clear():
+    global all_sprites, tiles_group, coins_group, checkpoint_group, walls_group, player_group, finish_group
+    for sprite in all_sprites:
+        sprite.kill()
+    for sprite in tiles_group:
+        sprite.kill()
+    for sprite in coins_group:
+        sprite.kill()
+    for sprite in checkpoint_group:
+        sprite.kill()
+    for sprite in walls_group:
+        sprite.kill()
+    for sprite in player_group:
+        sprite.kill()
+    for sprite in finish_group:
+        sprite.kill()
