@@ -10,6 +10,7 @@ clock = pygame.time.Clock()
 size = WIDTH, HEIGHT = 1200, 800
 levels = -1
 score = 0
+list_scores = []
 level_up = True
 clear_sprites = False
 skin = ''
@@ -124,6 +125,7 @@ walls_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 finish_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
+enemies_group = pygame.sprite.Group()
 
 tile_images = {
     'gr': load_image('gr.jpg'),
@@ -143,19 +145,27 @@ tile_images = {
     'trap4': load_image('trap4.jpg', -1),
     'fon': load_image('fon_map.jpg'),
     'empty': load_image('check1.png'),
-    'coin': load_image('coin1.png', -1)
+    'coin': load_image('coin1.png', -1),
+    'kub': load_image('kub.jpg')
 }
-maps = ['lv1.txt', 'lv2.txt']
+flymouse = [load_image('mouse1.jpg'), load_image('mouse2.jpg'), load_image('mouse3.jpg'),
+            load_image('mouse4.jpg'), load_image('mouse5.jpg')]
+maps = ['lv2.txt', 'lv1.txt']
 fin_im = [load_image('fin1.png'), load_image('fin2.png')]
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
 coin_im = [load_image('coin1.png'), load_image('coin2.jpg')]
 check_im = [load_image('check1.png'), load_image('check2.png')]
 
 plimst = [load_image('plst.png'), load_image('totmdw1.jpg')]
-plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1), load_image('totmrt1.jpg', -1), load_image('totmrt2.jpg', -1)]
-plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1), load_image('totmlf1.jpg', -1), load_image('totmlf2.jpg', -1)]
-plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1), load_image('totmdw1.jpg', -1), load_image('totmdw2.jpg', -1)]
-plim_up = [load_image('up1.png', -1), load_image('up2.png', -1), load_image('totmup1.jpg', -1), load_image('totmup2.jpg', -1)]
+plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1),
+           load_image('totmrt1.jpg', -1), load_image('totmrt2.jpg', -1)]
+plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1),
+           load_image('totmlf1.jpg', -1), load_image('totmlf2.jpg', -1)]
+plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1),
+           load_image('totmdw1.jpg', -1), load_image('totmdw2.jpg', -1)]
+plim_up = [load_image('up1.png', -1), load_image('up2.png', -1),
+           load_image('totmup1.jpg', -1), load_image('totmup2.jpg', -1)]
+score_im = load_image('score.jpg')
 
 
 def load_level(filename):
@@ -239,6 +249,28 @@ class Finish(pygame.sprite.Sprite):
         self.skintm += 1
 
 
+class Flymouses(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(enemies_group, all_sprites)
+        self.image = flymouse[0]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+        self.skintm = 0
+        self.speedx = 2
+        self.rect.x = tile_width * pos_x
+        self.rect.y = tile_height * pos_y
+
+    def update(self):
+        if self.skintm + 1 >= 50:
+            self.skintm = 0
+        self.image = flymouse[self.skintm // 10]
+        self.skintm += 1
+
+        self.rect.x += self.speedx
+        if pygame.sprite.spritecollideany(self, walls_group):
+            self.speedx = -self.speedx
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
@@ -264,6 +296,9 @@ class Player(pygame.sprite.Sprite):
         self.up_lv = False
         self.on_trap = False
         self.level = levels + 2
+        self.coin = score_im
+        self.rect_coin = self.coin.get_rect()
+        self.rect_coin.midtop = (60, 35)
 
     def update(self):
 
@@ -289,19 +324,14 @@ class Player(pygame.sprite.Sprite):
                 self.image = plim_dw[self.skintm // 30 + 2]
         self.skintm += 1
 
+        screen.blit(self.coin, self.rect_coin)
+
         score = str(self.count_coins)
         font = pygame.font.Font(None, 30)
         text_surface = font.render(score, True, pygame.Color('yellow'))
         intro_rect = text_surface.get_rect()
         intro_rect.midtop = (100, 40)
         screen.blit(text_surface, intro_rect)
-
-        lvl = 'Уровень ' + str(self.level)
-        font = pygame.font.Font(None, 30)
-        lvl_surface = font.render(lvl, True, pygame.Color('yellow'))
-        lvl_rect = lvl_surface.get_rect()
-        lvl_rect.midtop = (600, 40)
-        screen.blit(lvl_surface, lvl_rect)
 
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -319,7 +349,7 @@ class Player(pygame.sprite.Sprite):
             if self.speedy < 0:
                 self.speedy = 0
                 self.rect.y = self.rect.y + 40
-        if pygame.sprite.spritecollideany(self, traps_group):
+        if pygame.sprite.spritecollideany(self, traps_group) or pygame.sprite.spritecollideany(self, enemies_group):
             self.on_trap = True
         collis_coin = pygame.sprite.groupcollide(player_group, coins_group, False, True)
         if collis_coin:
@@ -349,7 +379,9 @@ def generate_level(level):
             if level[y][x] == '@':
                 Tile('fon', x, y)
                 new_player = Player(x, y)
-            if level[y][x] == '.':
+            elif level[y][x] == 'm':
+                Flymouses(x, y)
+            elif level[y][x] == '.':
                 Checkpoint('empty', x, y)
             elif level[y][x] == '0':
                 Tile('fon', x, y)
@@ -385,11 +417,16 @@ def generate_level(level):
                 Trap('trap4', x, y)
             elif level[y][x] == 'a':
                 Coins('coin', x, y)
+            elif level[y][x] == 'o':
+                Wall('kub', x, y)
     return new_player, fn
 
 
 def menu_screen():
-    global scores
+    global scores, list_scores
+
+    list_scores.append(scores)
+
     fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
@@ -467,5 +504,33 @@ def lose_screen():
                 sys.exit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def last_screen():
+    global list_scores
+    fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
+    screen.blit(fon, (0, 0))
+
+    sc = 'Общий счёт: ' + str(sum(list_scores))
+    sc_font = pygame.font.Font(None, 70)
+    sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
+    sc_rect = sc_text.get_rect()
+    sc_rect.midtop = (350, 350)
+    screen.blit(sc_text, sc_rect)
+
+    lv_up = 'Игра пройдена!'
+    lv_up_text = sc_font.render(lv_up, True, pygame.Color('yellow'))
+    lv_up_rect = lv_up_text.get_rect()
+    lv_up_rect.midtop = (350, 200)
+    screen.blit(lv_up_text, lv_up_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.display.quit()
+                pygame.quit()
+                sys.exit()
         pygame.display.flip()
         clock.tick(FPS)
