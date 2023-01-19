@@ -16,6 +16,7 @@ clear_sprites = False
 skin = ''
 
 pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Labyrinth of freedom')
 pygame.display.set_icon(pygame.image.load('data/ico.jpg'))
@@ -38,6 +39,9 @@ def load_image(name, colorkey=None):
 
 
 def start_screen():
+    pygame.mixer.music.load('sounds/menu.mp3')
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(-1)
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
     fon = pygame.transform.scale(load_image('fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
@@ -91,6 +95,7 @@ def choose_pers():
         manager=manager
     )
     global skin
+    choose = False
     while True:
         time_d = clock.tick(60) / 1000.0
         for event in pygame.event.get():
@@ -101,12 +106,16 @@ def choose_pers():
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == pers1:
+                        choose = True
                         skin = 'Pacman'
                         print(skin)
+                        shoose_s.play()
                     if event.ui_element == pers2:
+                        choose = True
                         skin = 'TOTM'
                         print(skin)
-            elif event.type == pygame.KEYDOWN:
+                        shoose_s.play()
+            elif event.type == pygame.KEYDOWN and choose:
                 return
             manager.process_events(event)
         manager.update(time_d)
@@ -150,7 +159,7 @@ tile_images = {
 }
 flymouse = [load_image('mouse1.jpg'), load_image('mouse2.jpg'), load_image('mouse3.jpg'),
             load_image('mouse4.jpg'), load_image('mouse5.jpg')]
-maps = ['lv2.txt', 'lv1.txt']
+maps = ['lv1.txt', 'lv2.txt']
 fin_im = [load_image('fin1.png'), load_image('fin2.png')]
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
 coin_im = [load_image('coin1.png'), load_image('coin2.jpg')]
@@ -166,6 +175,11 @@ plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1),
 plim_up = [load_image('up1.png', -1), load_image('up2.png', -1),
            load_image('totmup1.jpg', -1), load_image('totmup2.jpg', -1)]
 score_im = load_image('score.jpg')
+
+coin_s = pygame.mixer.Sound('sounds/coin.wav')
+shoose_s = pygame.mixer.Sound('sounds/choose.wav')
+move_s = pygame.mixer.Sound('sounds/move.mp3')
+move_s.set_volume(0.6)
 
 
 def load_level(filename):
@@ -274,6 +288,9 @@ class Flymouses(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
+        pygame.mixer.music.load('sounds/fon.mp3')
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(-1)
         if skin == 'Pacman':
             self.image = plimst[0]
         if skin == 'TOTM':
@@ -336,6 +353,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         if pygame.sprite.spritecollideany(self, walls_group):
+            move_s.play()
             self.move = True
             if self.speedx > 0:
                 self.speedx = 0
@@ -355,6 +373,7 @@ class Player(pygame.sprite.Sprite):
         if collis_coin:
             for coin in collis_coin.values():
                 self.count_coins += 100 * len(coin)
+                coin_s.play()
         collis_check = pygame.sprite.groupcollide(player_group, checkpoint_group, False, True)
         if collis_check:
             for check in collis_check.values():
@@ -426,6 +445,8 @@ def menu_screen():
     global scores, list_scores
 
     list_scores.append(scores)
+    pygame.mixer.music.load('sounds/levelup.wav')
+    pygame.mixer.music.play()
 
     fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
@@ -480,6 +501,8 @@ def clear():
 
 
 def lose_screen():
+    pygame.mixer.music.load('sounds/gameover.mp3')
+    pygame.mixer.music.play()
     fon = pygame.transform.scale(load_image('lose_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
     intro_text = "Чтобы начать заново нажмите на любую кнопку"
@@ -510,6 +533,9 @@ def lose_screen():
 
 def last_screen():
     global list_scores
+
+    pygame.mixer.music.load('sounds/last.mp3')
+    pygame.mixer.music.play()
     fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
 
