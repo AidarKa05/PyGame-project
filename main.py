@@ -1,7 +1,7 @@
 import pygame
 import sys
 from methods_lib import start_screen, load_level, generate_level, all_sprites, screen, level_up, clear, maps, levels
-from methods_lib import lose_screen, choose_pers, last_screen
+from methods_lib import lose_screen, choose_pers, last_screen, list_scores, set_results
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -16,6 +16,9 @@ if __name__ == '__main__':
             levels += 1
             if levels > 1:
                 levels = 1
+                scores = sum(list_scores)
+                lvl = levels + 1
+                set_results(scores, lvl)
                 last_screen()
             else:
                 player, fn = generate_level(load_level(maps[levels]))

@@ -2,6 +2,8 @@ import pygame
 import pygame_gui
 import sys
 import os
+import datetime
+import sqlite3
 
 
 FPS = 60
@@ -560,3 +562,13 @@ def last_screen():
                 sys.exit()
         pygame.display.flip()
         clock.tick(FPS)
+
+
+def set_results(scores, levels):
+    con = sqlite3.connect('scores.db')
+    cur = con.cursor()
+    now = datetime.datetime.now()
+    time = now.strftime('%d.%m.%Y %H:%M')
+    cur.execute('''INSERT INTO results(scores, completed_levels, datetime) VALUES(?, ?, ?)''', (scores, levels, time))
+    con.commit()
+    con.close()
