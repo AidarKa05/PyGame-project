@@ -21,11 +21,11 @@ pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Labyrinth of freedom')
-pygame.display.set_icon(pygame.image.load('data/ico.jpg'))
+pygame.display.set_icon(pygame.image.load('images/ico.jpg'))
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join('images', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -66,12 +66,13 @@ def start_screen():
 
 
 def choose_pers():
-    fon = pygame.transform.scale(load_image('lose_fon.jpg'), (1200, 800))
+    fon = pygame.transform.scale(load_image('bg_fon.png'), (1200, 800))
     screen.blit(fon, (0, 0))
-    screen.blit(plimst[0], (380, 400))
-    screen.blit(plimst[1], (780, 400))
+    screen.blit(plim_dw[0], (180, 400))
+    screen.blit(cyc_d[4], (980, 400))
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
-    font = pygame.font.Font(None, 40)
+    font_name = pygame.font.match_font('arial')
+    font = pygame.font.Font(font_name, 40)
     text_surface = font.render(intro_text, True, pygame.Color('yellow'))
     intro_rect = text_surface.get_rect()
     intro_rect.midtop = (600, 720)
@@ -81,18 +82,18 @@ def choose_pers():
     font_l = pygame.font.Font(None, 70)
     l_text = font_l.render(lose, True, pygame.Color('yellow'))
     l_rect = l_text.get_rect()
-    l_rect.midtop = (600, 150)
+    l_rect.midtop = (600, 200)
     screen.blit(l_text, l_rect)
 
     manager = pygame_gui.UIManager((1200, 800))
 
     pers1 = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((350, 500), (100, 50)),
+        relative_rect=pygame.Rect((150, 500), (100, 50)),
         text='PAC-MAN',
         manager=manager
     )
     pers2 = pygame_gui.elements.UIButton(
-        relative_rect=pygame.Rect((750, 500), (100, 50)),
+        relative_rect=pygame.Rect((950, 500), (100, 50)),
         text='TOTEM',
         manager=manager
     )
@@ -110,12 +111,10 @@ def choose_pers():
                     if event.ui_element == pers1:
                         choose = True
                         skin = 'Pacman'
-                        print(skin)
                         shoose_s.play()
                     if event.ui_element == pers2:
                         choose = True
                         skin = 'TOTM'
-                        print(skin)
                         shoose_s.play()
             elif event.type == pygame.KEYDOWN and choose:
                 return
@@ -159,23 +158,30 @@ tile_images = {
     'coin': load_image('coin1.png', -1),
     'kub': load_image('kub.jpg')
 }
-flymouse = [load_image('mouse1.jpg'), load_image('mouse2.jpg'), load_image('mouse3.jpg'),
-            load_image('mouse4.jpg'), load_image('mouse5.jpg')]
+flymouse = [load_image('mouse1.png'), load_image('mouse2.png'), load_image('mouse3.png'),
+            load_image('mouse4.png'), load_image('mouse5.png')]
 maps = ['lv1.txt', 'lv2.txt']
 fin_im = [load_image('fin1.png'), load_image('fin2.png')]
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
-coin_im = [load_image('coin1.png'), load_image('coin2.jpg')]
+coin_im = [load_image('coin1.png'), load_image('coin2.png')]
 check_im = [load_image('check1.png'), load_image('check2.png')]
 
-plimst = [load_image('plst.png'), load_image('totmdw1.jpg')]
-plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1),
-           load_image('totmrt1.jpg', -1), load_image('totmrt2.jpg', -1)]
-plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1),
-           load_image('totmlf1.jpg', -1), load_image('totmlf2.jpg', -1)]
-plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1),
-           load_image('totmdw1.jpg', -1), load_image('totmdw2.jpg', -1)]
-plim_up = [load_image('up1.png', -1), load_image('up2.png', -1),
-           load_image('totmup1.jpg', -1), load_image('totmup2.jpg', -1)]
+cyc_d = [load_image('cyc1d.png'), load_image('cyc2d.png'),
+         load_image('cyc3d.png'), load_image('cyc4d.png'),
+         load_image('cyc5d.png'), load_image('cyc6d.png')]
+cyc_u = [load_image('cyc1u.png'), load_image('cyc2u.png'),
+         load_image('cyc3u.png'), load_image('cyc4u.png'),
+         load_image('cyc5u.png'), load_image('cyc6u.png')]
+cyc_r = [load_image('cyc1r.png'), load_image('cyc2r.png'),
+         load_image('cyc3r.png'), load_image('cyc4r.png'),
+         load_image('cyc5r.png'), load_image('cyc6r.png')]
+cyc_l = [load_image('cyc1l.png'), load_image('cyc2l.png'),
+         load_image('cyc3l.png'), load_image('cyc4l.png'),
+         load_image('cyc5l.png'), load_image('cyc6l.png')]
+plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1)]
+plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1)]
+plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1)]
+plim_up = [load_image('up1.png', -1), load_image('up2.png', -1)]
 score_im = load_image('score.jpg')
 
 coin_s = pygame.mixer.Sound('sounds/coin.wav')
@@ -185,7 +191,7 @@ move_s.set_volume(0.6)
 
 
 def load_level(filename):
-    filename = "data/" + filename
+    filename = "maps/" + filename
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
     max_width = max(map(len, level_map))
@@ -294,9 +300,9 @@ class Player(pygame.sprite.Sprite):
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play(-1)
         if skin == 'Pacman':
-            self.image = plimst[0]
+            self.image = plim_dw[0]
         if skin == 'TOTM':
-            self.image = plimst[1]
+            self.image = cyc_d[4]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.speedx = 0
@@ -334,13 +340,13 @@ class Player(pygame.sprite.Sprite):
                 self.image = plim_dw[self.skintm // 30]
         if skin == 'TOTM':
             if self.rt:
-                self.image = plim_rt[self.skintm // 30 + 2]
+                self.image = cyc_r[self.skintm // 10]
             if self.lf:
-                self.image = plim_lf[self.skintm // 30 + 2]
+                self.image = cyc_l[self.skintm // 10]
             if self.up:
-                self.image = plim_up[self.skintm // 30 + 2]
+                self.image = cyc_u[self.skintm // 10]
             if self.dw:
-                self.image = plim_dw[self.skintm // 30 + 2]
+                self.image = cyc_d[self.skintm // 10]
         self.skintm += 1
 
         screen.blit(self.coin, self.rect_coin)
@@ -450,10 +456,11 @@ def menu_screen():
     pygame.mixer.music.load('sounds/levelup.wav')
     pygame.mixer.music.play()
 
-    fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
+    fon = pygame.transform.scale(load_image('bg_menu.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
-    font = pygame.font.Font(None, 40)
+    font_name = pygame.font.match_font('arial')
+    font = pygame.font.Font(font_name, 40)
     text_surface = font.render(intro_text, True, pygame.Color('yellow'))
     intro_rect = text_surface.get_rect()
     intro_rect.midtop = (600, 730)
@@ -463,13 +470,13 @@ def menu_screen():
     sc_font = pygame.font.Font(None, 70)
     sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
     sc_rect = sc_text.get_rect()
-    sc_rect.midtop = (350, 300)
+    sc_rect.midtop = (420, 350)
     screen.blit(sc_text, sc_rect)
 
     lv_up = 'Уровень пройден!'
     lv_up_text = sc_font.render(lv_up, True, pygame.Color('yellow'))
     lv_up_rect = lv_up_text.get_rect()
-    lv_up_rect.midtop = (350, 200)
+    lv_up_rect.midtop = (420, 200)
     screen.blit(lv_up_text, lv_up_rect)
 
     while True:
@@ -508,7 +515,8 @@ def lose_screen():
     fon = pygame.transform.scale(load_image('lose_fon.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
     intro_text = "Чтобы начать заново нажмите на любую кнопку"
-    font = pygame.font.Font(None, 40)
+    font_name = pygame.font.match_font('arial')
+    font = pygame.font.Font(font_name, 40)
     text_surface = font.render(intro_text, True, pygame.Color('yellow'))
     intro_rect = text_surface.get_rect()
     intro_rect.midtop = (600, 720)
@@ -538,20 +546,21 @@ def last_screen():
 
     pygame.mixer.music.load('sounds/last.mp3')
     pygame.mixer.music.play()
-    fon = pygame.transform.scale(load_image('menu_fon.jpg'), (1200, 800))
+    fon = pygame.transform.scale(load_image('bg_menu.jpg'), (1200, 800))
     screen.blit(fon, (0, 0))
 
     sc = 'Общий счёт: ' + str(sum(list_scores))
     sc_font = pygame.font.Font(None, 70)
     sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
     sc_rect = sc_text.get_rect()
-    sc_rect.midtop = (350, 350)
+    sc_rect.midtop = (420, 450)
     screen.blit(sc_text, sc_rect)
 
     lv_up = 'Игра пройдена!'
-    lv_up_text = sc_font.render(lv_up, True, pygame.Color('yellow'))
+    font = pygame.font.Font(None, 90)
+    lv_up_text = font.render(lv_up, True, pygame.Color('yellow'))
     lv_up_rect = lv_up_text.get_rect()
-    lv_up_rect.midtop = (350, 200)
+    lv_up_rect.midtop = (420, 200)
     screen.blit(lv_up_text, lv_up_rect)
 
     while True:
