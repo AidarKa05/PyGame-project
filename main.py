@@ -14,8 +14,8 @@ if __name__ == '__main__':
     while running:
         if level_up:
             levels += 1
-            if levels > 1:
-                levels = 1
+            if levels > 2:
+                levels = 2
                 scores = sum(list_scores)
                 lvl = levels + 1
                 set_results(scores, lvl)

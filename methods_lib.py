@@ -68,7 +68,7 @@ def start_screen():
 def choose_pers():
     fon = pygame.transform.scale(load_image('bg_fon.png'), (1200, 800))
     screen.blit(fon, (0, 0))
-    screen.blit(plim_dw[0], (180, 400))
+    screen.blit(pacm_r[1], (180, 400))
     screen.blit(cyc_d[4], (980, 400))
     intro_text = "Чтобы продолжить нажмите на любую кнопку"
     font_name = pygame.font.match_font('arial')
@@ -160,7 +160,7 @@ tile_images = {
 }
 flymouse = [load_image('mouse1.png'), load_image('mouse2.png'), load_image('mouse3.png'),
             load_image('mouse4.png'), load_image('mouse5.png')]
-maps = ['lv1.txt', 'lv2.txt']
+maps = ['lv1.txt', 'lv2.txt', 'lv3.txt']
 fin_im = [load_image('fin1.png'), load_image('fin2.png')]
 anim = [load_image('anim1.png', -1), load_image('anim2.png', -1), load_image('anim3.png', -1)]
 coin_im = [load_image('coin1.png'), load_image('coin2.png')]
@@ -178,10 +178,17 @@ cyc_r = [load_image('cyc1r.png'), load_image('cyc2r.png'),
 cyc_l = [load_image('cyc1l.png'), load_image('cyc2l.png'),
          load_image('cyc3l.png'), load_image('cyc4l.png'),
          load_image('cyc5l.png'), load_image('cyc6l.png')]
-plim_rt = [load_image('rt1.png', -1), load_image('rt2.png', -1)]
-plim_lf = [load_image('lf1.png', -1), load_image('lf2.png', -1)]
-plim_dw = [load_image('dw1.png', -1), load_image('dw2.png', -1)]
-plim_up = [load_image('up1.png', -1), load_image('up2.png', -1)]
+pacm_r = [load_image('pac1.png', -1), load_image('pac2r.png', -1),
+          load_image('pac3r.png', -1), load_image('pac2r.png', -1)]
+pacm_l = [load_image('pac1.png', -1), load_image('pac2l.png', -1),
+          load_image('pac3l.png', -1), load_image('pac2l.png', -1)]
+pacm_u = [load_image('pac1.png', -1), load_image('pac2u.png', -1),
+          load_image('pac3u.png', -1), load_image('pac2u.png', -1)]
+pacm_d = [load_image('pac1.png', -1), load_image('pac2d.png', -1),
+          load_image('pac3d.png', -1), load_image('pac2d.png', -1)]
+pac_enem_r = [load_image('rt1.png', -1), load_image('rt2.png', -1)]
+pac_enem_l = [load_image('lf1.png', -1), load_image('lf2.png', -1)]
+pac_enem = load_image('plst.png')
 score_im = load_image('score.jpg')
 
 coin_s = pygame.mixer.Sound('sounds/coin.wav')
@@ -274,23 +281,71 @@ class Finish(pygame.sprite.Sprite):
 class Flymouses(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(enemies_group, all_sprites)
-        self.image = flymouse[0]
+        if skin == 'Pacman':
+            self.image = pac_enem
+        if skin == 'TOTM':
+            self.image = flymouse[0]
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
         self.skintm = 0
         self.speedx = 2
         self.rect.x = tile_width * pos_x
         self.rect.y = tile_height * pos_y
+        self.pac = True
 
     def update(self):
-        if self.skintm + 1 >= 50:
-            self.skintm = 0
-        self.image = flymouse[self.skintm // 10]
+        if skin == 'Pacman':
+            if self.skintm + 1 >= 20:
+                self.skintm = 0
+            if self.pac:
+                self.image = pac_enem_r[self.skintm // 10]
+            if not self.pac:
+                self.image = pac_enem_l[self.skintm // 10]
+        if skin == 'TOTM':
+            if self.skintm + 1 >= 50:
+                self.skintm = 0
+            self.image = flymouse[self.skintm // 10]
         self.skintm += 1
 
         self.rect.x += self.speedx
         if pygame.sprite.spritecollideany(self, walls_group):
             self.speedx = -self.speedx
+            self.pac = not self.pac
+
+
+class Flymwert(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(enemies_group, all_sprites)
+        if skin == 'Pacman':
+            self.image = pac_enem
+        if skin == 'TOTM':
+            self.image = flymouse[0]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+        self.skintm = 0
+        self.speedy = 2
+        self.rect.x = tile_width * pos_x
+        self.rect.y = tile_height * pos_y
+        self.pac = True
+
+    def update(self):
+        if skin == 'Pacman':
+            if self.skintm + 1 >= 20:
+                self.skintm = 0
+            if self.pac:
+                self.image = pac_enem_r[self.skintm // 10]
+            if not self.pac:
+                self.image = pac_enem_l[self.skintm // 10]
+        if skin == 'TOTM':
+            if self.skintm + 1 >= 50:
+                self.skintm = 0
+            self.image = flymouse[self.skintm // 10]
+        self.skintm += 1
+
+        self.rect.y += self.speedy
+        if pygame.sprite.spritecollideany(self, walls_group):
+            self.speedy = -self.speedy
+            self.pac = not self.pac
 
 
 class Player(pygame.sprite.Sprite):
@@ -300,7 +355,7 @@ class Player(pygame.sprite.Sprite):
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play(-1)
         if skin == 'Pacman':
-            self.image = plim_dw[0]
+            self.image = pacm_r[0]
         if skin == 'TOTM':
             self.image = cyc_d[4]
         self.rect = self.image.get_rect().move(
@@ -324,21 +379,24 @@ class Player(pygame.sprite.Sprite):
         self.coin = score_im
         self.rect_coin = self.coin.get_rect()
         self.rect_coin.midtop = (60, 35)
+        self.anim_st = 0
+        self.collid = False
 
     def update(self):
-
-        if self.skintm + 1 >= 60:
-            self.skintm = 0
         if skin == 'Pacman':
+            if self.skintm + 1 >= 40:
+                self.skintm = 0
             if self.rt:
-                self.image = plim_rt[self.skintm // 30]
+                self.image = pacm_r[self.skintm // 10]
             if self.lf:
-                self.image = plim_lf[self.skintm // 30]
+                self.image = pacm_l[self.skintm // 10]
             if self.up:
-                self.image = plim_up[self.skintm // 30]
+                self.image = pacm_u[self.skintm // 10]
             if self.dw:
-                self.image = plim_dw[self.skintm // 30]
+                self.image = pacm_d[self.skintm // 10]
         if skin == 'TOTM':
+            if self.skintm + 1 >= 60:
+                self.skintm = 0
             if self.rt:
                 self.image = cyc_r[self.skintm // 10]
             if self.lf:
@@ -376,7 +434,17 @@ class Player(pygame.sprite.Sprite):
                 self.speedy = 0
                 self.rect.y = self.rect.y + 40
         if pygame.sprite.spritecollideany(self, traps_group) or pygame.sprite.spritecollideany(self, enemies_group):
-            self.on_trap = True
+            collis_enim = pygame.sprite.groupcollide(player_group, enemies_group, False, True)
+            self.collid = True
+        if self.collid:
+            self.speedy = 0
+            self.speedx = 0
+            if self.anim_st + 1 >= 30:
+                self.anim_st = 0
+                self.on_trap = True
+            screen.blit(anim[self.anim_st // 10], (self.rect.x - 20, self.rect.y - 20))
+            self.anim_st += 1
+
         collis_coin = pygame.sprite.groupcollide(player_group, coins_group, False, True)
         if collis_coin:
             for coin in collis_coin.values():
@@ -408,6 +476,8 @@ def generate_level(level):
                 new_player = Player(x, y)
             elif level[y][x] == 'm':
                 Flymouses(x, y)
+            elif level[y][x] == 'v':
+                Flymwert(x, y)
             elif level[y][x] == '.':
                 Checkpoint('empty', x, y)
             elif level[y][x] == '0':
@@ -553,7 +623,7 @@ def last_screen():
     sc_font = pygame.font.Font(None, 70)
     sc_text = sc_font.render(sc, True, pygame.Color('yellow'))
     sc_rect = sc_text.get_rect()
-    sc_rect.midtop = (420, 450)
+    sc_rect.midtop = (450, 400)
     screen.blit(sc_text, sc_rect)
 
     lv_up = 'Игра пройдена!'
